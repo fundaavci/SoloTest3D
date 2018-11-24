@@ -8,7 +8,138 @@ public class TablaYonetici : MonoBehaviour {
     [SerializeField] GameObject piyonPrefab;
     Piyon[,] piyonlar = new Piyon[7, 7];
 
-	void Start () {
+    Piyon secilenPiyon;
+
+    Vector3 piyonOffset = new Vector3(-0.5f,0f,-0.5f);
+
+    Vector2 mouseOver;
+    Vector2 startDrag;
+    Vector2 endDrag;
+
+    void UpdateMouseOver()
+    {
+        if (!Camera.main)
+            Debug.Log("Main camera bulunamadı!");
+
+        RaycastHit hit;
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),out hit,25.0f,LayerMask.GetMask("Tabla")))
+        {
+            mouseOver.y =(int)(hit.point.x-piyonOffset.x);
+            mouseOver.x = (int)(hit.point.z-piyonOffset.z);
+        }
+        else
+        {
+            mouseOver.x = -100;
+            mouseOver.y = -100;
+        }
+    }
+
+    private void Update()
+    {
+        UpdateMouseOver();
+
+        Debug.Log(mouseOver.x + " " + mouseOver.y);
+
+        int x = (int)mouseOver.x;
+        int y = (int)mouseOver.y;
+
+        if(secilenPiyon != null)
+        {
+            if (Input.GetMouseButtonDown(0))
+                TasimaDene((int)startDrag.x, (int)startDrag.y, x, y);
+        }
+        else
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                PiyonSec(x, y);
+
+                if(secilenPiyon != null)
+                {
+                    UpdatePiyonDrag(secilenPiyon);
+                }
+            }
+        }
+    }
+
+    private void PiyonSec(int x, int y)
+    {
+        //Out of bounds
+        if (x < 0 || x >= 7 || y < 0 || y >= 7)
+            return;
+
+        Piyon p = piyonlar[x, y];
+
+        if(p!=null)
+        {
+            secilenPiyon = p;
+            startDrag = mouseOver;
+        }
+        
+    }
+
+    private void UpdatePiyonDrag(Piyon p)
+    {
+        if (!Camera.main)
+            Debug.Log("Main camera bulunamadı!");
+
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("Tabla")))
+            p.transform.position = hit.point + (Vector3.up * 2);
+
+    }
+
+
+
+    private void TasimaDene(int x1, int y1, int x2, int y2)
+    {
+        startDrag = new Vector2(x1, y1);
+        endDrag = new Vector2(x2,y2);
+        secilenPiyon = piyonlar[x1, y1];
+
+        //Out of bounds
+        if (x2 < 0 || x2 >= 7 || y2 < 0 || y2 >= 7)
+        {
+            if (secilenPiyon != null)
+                PiyonTasi(secilenPiyon, x1, y1);
+
+            startDrag = Vector2.zero;
+            secilenPiyon = null;
+            return;
+        }
+
+        if(secilenPiyon != null)
+        {
+            //Eğer aynı yere taşınmak isterse taşıma iptal edilir
+            if(endDrag == startDrag)
+            {
+                PiyonTasi(secilenPiyon, x1, y1);
+
+                startDrag = Vector2.zero;
+                secilenPiyon = null;
+                return;
+
+            }
+
+            //Taşınabilir mi kontrol edilecek
+            if (TasimaDogrula(x1, y1, x2, y2))
+            {
+                piyonlar[x2, y2] = secilenPiyon;
+                piyonlar[x1, y1] = null;
+                PiyonTasi(secilenPiyon, x2, y2);
+                secilenPiyon = null;
+                startDrag = Vector2.zero;
+            }
+        }
+
+    }
+
+    private bool TasimaDogrula(int x1, int y1, int x2, int y2)
+    {
+        return true;
+    }
+
+    void Start () {
         TablaOlustur();
 	}
 

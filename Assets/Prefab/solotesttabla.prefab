@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33098150147334648}
   - component: {fileID: 23802766545254184}
   - component: {fileID: 95227885350565370}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: solotesttabla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
