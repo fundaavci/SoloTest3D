@@ -124,6 +124,17 @@ public class TablaYonetici : MonoBehaviour {
             //Taşınabilir mi kontrol edilecek
             if (TasimaDogrula(x1, y1, x2, y2))
             {
+                if(x1 == x2)
+                {
+                    Destroy(piyonlar[x1, (y1 + y2) / 2].gameObject);
+                    piyonlar[x1, (y1 + y1) / 2] = null;
+                }
+                else
+                {
+                    Destroy(piyonlar[(x1 + x2) / 2, y1].gameObject);
+                    piyonlar[(x1 + x2) / 2, y1] = null;
+                }
+
                 piyonlar[x2, y2] = secilenPiyon;
                 piyonlar[x1, y1] = null;
                 PiyonTasi(secilenPiyon, x2, y2);
@@ -136,7 +147,59 @@ public class TablaYonetici : MonoBehaviour {
 
     private bool TasimaDogrula(int x1, int y1, int x2, int y2)
     {
-        return true;
+        //yasaklı konumlar
+        if (x2 == 0 && y2 == 0 || x2 == 0 && y2 == 1 || x2 == 0 && y2 == 5 || x2 == 0 && y2 == 6
+         || x2 == 1 && y2 == 0 || x2 == 1 && y2 == 1 || x2 == 1 && y2 == 5 || x2 == 1 && y2 == 6
+         || x2 == 5 && y2 == 0 || x2 == 5 && y2 == 1 || x2 == 5 && y2 == 5 || x2 == 5 && y2 == 6
+         || x2 == 6 && y2 == 0 || x2 == 6 && y2 == 1 || x2 == 6 && y2 == 5 || x2 == 6 && y2 == 6)
+            return false;
+
+        if(x1 == x2)
+        {
+            int y3;
+
+            if(y1 > y2)
+            {
+                if (y1 - y2 > 2 || y1 - y2 < 2)
+                    return false;
+
+                y3 = y1 - 1;
+            }
+            else
+            {
+                if (y2 - y1 > 2 || y2 - y1 < 2)
+                    return false;
+
+                y3 = y2 - 1;
+            }
+
+            if (piyonlar[x1, y1] != null && piyonlar[x2, y2] == null && piyonlar[x1, y3] != null)
+                return true;
+        }
+        else if (y1 == y2)
+        {
+            int x3;
+
+            if (x1 > x2)
+            {
+                if (x1 - x2 > 2 || x1 - x2 < 2)
+                    return false;
+
+                x3 = x1 - 1;
+            }
+            else
+            {
+                if (x2 - x1 > 2 || x2 - x1 < 2)
+                    return false;
+
+                x3 = x2 - 1;
+            }
+
+            if (piyonlar[x1, y1] != null && piyonlar[x2, y2] == null && piyonlar[x3, y1] != null)
+                return true;
+        }
+
+        return false;
     }
 
     void Start () {
