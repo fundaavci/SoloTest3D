@@ -38,7 +38,7 @@ public class TablaYonetici : MonoBehaviour {
     {
         UpdateMouseOver();
 
-        Debug.Log(mouseOver.x + " " + mouseOver.y);
+       // Debug.Log(mouseOver.x + " " + mouseOver.y);
 
         int x = (int)mouseOver.x;
         int y = (int)mouseOver.y;
@@ -60,6 +60,9 @@ public class TablaYonetici : MonoBehaviour {
                 }
             }
         }
+
+        if (OyunBittimi())
+            Debug.Log("Kalan piyon" + PiyonSayac());
     }
 
     private void PiyonSec(int x, int y)
@@ -89,7 +92,60 @@ public class TablaYonetici : MonoBehaviour {
 
     }
 
+    bool OyunBittimi()
+    {
+        for(int x= 0; x < 7;x++)
+        {
+            for(int y =0;y<7;y++)
+            {
+                if(x < 5)
+                {
+                    if(TasimaDogrula(x,y,x+2,y))
+                    {
+                        return false;
+                    }
+                }
 
+                if (y < 5)
+                {
+                    if (TasimaDogrula(x, y, x, y + 2))
+                    {
+                        return false;
+                    }
+                }
+
+                if(x > 1)
+                {
+                    if (TasimaDogrula(x, y, x - 2, y))
+                    {
+                        return false;
+                    }
+                }
+
+                if (y > 1)
+                {
+                    if (TasimaDogrula(x, y, x, y -2))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    int PiyonSayac()
+    {
+        int sayac = 0;
+
+        for (int i = 0; i < 7; i++)
+            for (int j = 0; j < 7; j++)
+                if (piyonlar[i, j] != null)
+                    sayac++;
+
+        return sayac;
+    }
 
     private void TasimaDene(int x1, int y1, int x2, int y2)
     {
@@ -127,13 +183,15 @@ public class TablaYonetici : MonoBehaviour {
                 if(x1 == x2)
                 {
                     Destroy(piyonlar[x1, (y1 + y2) / 2].gameObject);
-                    piyonlar[x1, (y1 + y1) / 2] = null;
+                    piyonlar[x1, (y1 + y2) / 2] = null;
                 }
                 else
                 {
                     Destroy(piyonlar[(x1 + x2) / 2, y1].gameObject);
                     piyonlar[(x1 + x2) / 2, y1] = null;
                 }
+
+                Debug.Log(PiyonSayac());
 
                 piyonlar[x2, y2] = secilenPiyon;
                 piyonlar[x1, y1] = null;
