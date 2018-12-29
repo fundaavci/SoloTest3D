@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TablaYonetici : MonoBehaviour {
 
@@ -15,6 +16,11 @@ public class TablaYonetici : MonoBehaviour {
     Vector2 mouseOver;
     Vector2 startDrag;
     Vector2 endDrag;
+
+    int[] sonucDerece = new int[9];
+
+    [SerializeField] GameObject sonuc;
+    [SerializeField] GameObject sonucReferans;
 
     void UpdateMouseOver()
     {
@@ -62,7 +68,30 @@ public class TablaYonetici : MonoBehaviour {
         }
 
         if (OyunBittimi())
-            Debug.Log("Kalan piyon" + PiyonSayac());
+        {
+            //Debug.Log("Kalan piyon" + PiyonSayac());
+            sonuc.transform.position = Vector3.Lerp(sonuc.transform.position, sonucReferans.transform.position, Time.deltaTime);
+            sonuc.transform.rotation = Quaternion.Slerp(sonuc.transform.rotation,sonucReferans.transform.rotation, Time.deltaTime);
+        }
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if(Physics.Raycast(ray,out hit))
+            {
+                if (hit.collider != null)
+                {
+                    if (hit.collider.name == "sonuc")
+                    {
+                        SceneManager.LoadScene("game");
+
+                    }
+
+                }
+
+            }
+        }
     }
 
     private void PiyonSec(int x, int y)
@@ -131,6 +160,12 @@ public class TablaYonetici : MonoBehaviour {
                 }
             }
         }
+
+        int sayac = PiyonSayac();
+        if (PiyonSayac() >= 9)
+            sayac = 0;
+
+        sonucReferans.transform.eulerAngles = new Vector3(270.0f, sonucDerece[sayac], 0.0f);
 
         return true;
     }
@@ -261,8 +296,21 @@ public class TablaYonetici : MonoBehaviour {
     }
 
     void Start () {
+
+        SonucDereceHesapla();
+
         TablaOlustur();
 	}
+
+    private void SonucDereceHesapla()
+    {
+        int derece = 10;
+        for(int i = 0;i<9;i++)
+        {
+            sonucDerece[i] = derece;
+            derece += 40;
+        }
+    }
 
     private void TablaOlustur()
     {
